@@ -6,7 +6,7 @@ pipeline {
                 axes {
                     axis {
                         name 'PY_VER'
-                        values '3.10', '3.11'
+                        values 'python3.10', 'python3.11'
                     }
                 }
                 agent { label 'local' }
@@ -16,9 +16,8 @@ pipeline {
                 stages {
                     stage('Install & Test') {
                         steps {
-                            sh """
-                                pyenv local ${PY_VER}
-                                python3 -m pip install -q --upgrade pip
+                            sh """ 
+                                ${PY_VER} -m pip install -q --upgrade pip
                                 pip3 install -q -r requirements.txt
                                 pytest -q
                             """
