@@ -1,6 +1,6 @@
 pipeline {
     agent { label 'local'}
-    envirment {
+    environment {
         // 万无一失地确保用新 pip
         PATH = "/usr/local/bin:/usr/local/opt/python@3.11/bin:${env.PATH}"
     }
