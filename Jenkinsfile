@@ -1,32 +1,31 @@
 pipeline {
-  agent none                          // 顶层无 agent
-  environment {
-    PATH = "/usr/local/bin:/usr/local/opt/python@3.11/bin:${env.PATH}"
-  }
+  agent none
 
   stages {
     stage('Matrix Test') {
-      parallel {
-        stage('py310') {              // ❶
-          agent { label 'local' }
-          steps {
-            sh '''
-              pyenv global 3.10
-              python3 -m pip install --upgrade pip
-              pip3 install -r requirements.txt
-              pytest -q
-            '''
+      matrix {
+        axes {
+          axis {
+            name 'PY_VER'
+            values '3.10','3.11'          // 先单版本跑通，再加 '3.10'
           }
         }
-        stage('py311') {              // ❷
-          agent { label 'local' }
-          steps {
-            sh '''
-              pyenv global 3.11
-              python3 -m pip install --upgrade pip
-              pip3 install -r requirements.txt
-              pytest -q
-            '''
+        agent { label 'local' }
+
+        environment {
+          PATH = "/usr/local/bin:/usr/local/opt/python@3.11/bin:/bin:/usr/bin:${env.PATH}"
+        }
+
+        stages {
+          stage('Install & Test') {
+            steps {
+              sh '''
+                echo "Running on Python $(python3 -V)"
+                python3 -m pip install --upgrade pip
+                pip install -r requirements.txt
+                pytest -q
+              '''
+            }
           }
         }
       }
